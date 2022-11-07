@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.my.mapper.StudentMapper">
+    <select id="getStudents" resultType="com.my.entity.Student">
+        select
+        s.id, s.id_number, s.name, s.password, s.sex, s.phone, s.email, s.address, s.avatar,
+        s.lockState, c.name as class_id, d.short_name as dep_id, p.short_name as pro_id, s.isClock,
+        s.healthCode, s.tourCode, s.createBy, s.createTime, s.editBy, s.editTime
+        from tbl_student s
+        left join tbl_class c on c.id=s.class_id
+        left join tbl_dic_dep d on d.code=s.dep_id
+        left join tbl_dic_pro p on p.code=s.pro_id
+        <where>
+            <if test="name != null and name != ''">
+                s.name like '%' #{name} '%'
+            </if>
+            <if test="id_number != null and id_number != ''">
+                and s.id_number like '%' #{id_number} '%'
+            </if>
+            <if test="sex != null and sex != ''">
+                and s.sex like '%' #{sex} '%'
+            </if>
+            <if test="phone != null and phone != ''">
+                and s.phone like '%' #{phone} '%'
+            </if>
+            <if test="class_id != null and class_id != ''">
+                and c.name like '%' #{class_id} '%'
+            </if>
+        </where>
+        order by s.createTime desc
+    </select>
+
+    <insert id="saveStudent">
+        insert into tbl_student
+        (
+            id,
+            id_number,
+            name,
+            password,
+            sex,
+            phone,
+            email,
+            address,
+            avatar,
+            lockState,
+            isClock,
+            healthCode,
+            tourCode,
+            class_id,
+            dep_id,
+            pro_id,
+            createBy,
+            createTime
+        )
+        values
+        (
+            #{id},
+            #{id_number},
+            #{name},
+            #{password},
+            #{sex},
+            #{phone},
+            #{email},
+            #{address},
+            #{avatar},
+            #{lockState},
+            #{isClock},
+            #{healthCode},
+            #{tourCode},
+            #{class_id},
+            #{dep_id},
+            #{pro_id},
+            #{createBy},
+            #{createTime}
+        )
+    </insert>
+
+    <select id="getClassPersonNumber" resultType="int">
+        select count(*) from tbl_student where class_id=#{class_id}
+    </select>
+
+
+    <select id="queryStudentById" resultType="com.my.entity.Student">
+        select
+            s.id, s.id_number, s.name, s.password, s.sex, s.phone, s.email, s.address, s.avatar,
+            s.lockState, c.name as class_id, d.short_name as dep_id, p.short_name as pro_id, s.isClock,
+            s.healthCode, s.tourCode, s.createBy, s.createTime, s.editBy, s.editTime
+        from tbl_student s
+         left join tbl_class c on c.id=s.class_id
+         left join tbl_dic_dep d on d.code=s.dep_id
+         left join tbl_dic_pro p on p.code=s.pro_id
+        where s.id=#{id}
+    </select>
+
+    <delete id="deleteStudentByIds">
+        delete from
+            tbl_student
+        where id in
+        <foreach collection="array" item="ids" separator="," open="(" close=")">
+            #{ids}
+        </foreach>
+    </delete>
+
+    <delete id="deleteStudentById">
+        delete from
+            tbl_student
+        where id=#{id}
+    </delete>
+
+    <update id="updateStudent">
+        update tbl_student
+        set
+            name=#{name},
+            address=#{address},
+            class_id=#{class_id},
+            phone=#{phone},
+            email=#{email},
+            password=#{password},
+            avatar=#{avatar},
+            lockState=#{lockState},
+            sex=#{sex},
+            isClock=#{isClock},
+            dep_id=#{dep_id},
+            pro_id=#{pro_id},
+            editBy=#{editBy},
+            editTime=#{editTime}
+        where id=#{id}
+    </update>
+
+    <select id="getAllStudents" resultType="com.my.entity.Student">
+        select
+            s.id, s.id_number, s.name, s.password, s.sex, s.phone, s.email, s.address, s.avatar,
+            s.lockState, c.name as class_id, d.short_name as dep_id, p.short_name as pro_id, s.isClock,
+            s.healthCode, s.tourCode, s.createBy, s.createTime, s.editBy, s.editTime
+        from tbl_student s
+        left join tbl_class c on c.id=s.class_id
+        left join tbl_dic_dep d on d.code=s.dep_id
+        left join tbl_dic_pro p on p.code=s.pro_id
+        order by s.id_number desc
+    </select>
+
+    <select id="getStudentByIds" resultType="com.my.entity.Student">
+        select
+            s.id, s.id_number, s.name, s.password, s.sex, s.phone, s.email, s.address, s.avatar,
+            s.lockState, c.name as class_id, d.short_name as dep_id, p.short_name as pro_id, s.isClock,
+            s.healthCode, s.tourCode, s.createBy, s.createTime, s.editBy, s.editTime
+        from tbl_student s
+                 left join tbl_class c on c.id=s.class_id
+                 left join tbl_dic_dep d on d.code=s.dep_id
+                 left join tbl_dic_pro p on p.code=s.pro_id
+        where s.id in
+        <foreach collection="array" item="ids" separator="," open="(" close=")">
+            #{ids}
+        </foreach>
+        order by s.id_number desc
+    </select>
+
+    <select id="getNotClockStudents" resultType="com.my.entity.Student">
+        select
+            s.id, s.id_number, s.name, s.password, s.sex, s.phone, s.email, s.address, s.avatar,
+            s.lockState, c.name as class_id, d.short_name as dep_id, p.short_name as pro_id, s.isClock,
+            s.healthCode, s.tourCode, s.createBy, s.createTime, s.editBy, s.editTime
+        from tbl_student s
+        left join tbl_class c on c.id=s.class_id
+        left join tbl_dic_dep d on d.code=s.dep_id
+        left join tbl_dic_pro p on p.code=s.pro_id
+        where s.isClock='0'
+        order by s.id_number desc
+    </select>
+
+    <select id="getNotClockStudentsByStudentIds" resultType="com.my.entity.Student">
+        select
+            s.id, s.id_number, s.name, s.password, s.sex, s.phone, s.email, s.address, s.avatar,
+            s.lockState, c.name as class_id, d.short_name as dep_id, p.short_name as pro_id, s.isClock,
+            s.healthCode, s.tourCode, s.createBy, s.createTime, s.editBy, s.editTime
+        from tbl_student s
+                 left join tbl_class c on c.id=s.class_id
+                 left join tbl_dic_dep d on d.code=s.dep_id
+                 left join tbl_dic_pro p on p.code=s.pro_id
+        where s.isClock='0' and s.id in
+            <foreach collection="array" item="studentId" separator="," open="(" close=")">
+                #{studentId}
+            </foreach>
+        order by s.id_number desc
+    </select>
+
+    <select id="getNotTourStudents" resultType="com.my.entity.Student">
+        select
+            s.id, s.id_number, s.name, s.password, s.sex, s.phone, s.email, s.address, s.avatar,
+            s.lockState, c.name as class_id, d.short_name as dep_id, p.short_name as pro_id, s.isClock,
+            s.healthCode, s.tourCode, s.createBy, s.createTime, s.editBy, s.editTime
+        from tbl_student s
+                 left join tbl_class c on c.id=s.class_id
+                 left join tbl_dic_dep d on d.code=s.dep_id
+                 left join tbl_dic_pro p on p.code=s.pro_id
+        where s.tourCode=''
+        order by s.id_number desc
+    </select>
+
+    <select id="getNotTourStudentsByStudentIds" resultType="com.my.entity.Student">
+        select
+            s.id, s.id_number, s.name, s.password, s.sex, s.phone, s.email, s.address, s.avatar,
+            s.lockState, c.name as class_id, d.short_name as dep_id, p.short_name as pro_id, s.isClock,
+            s.healthCode, s.tourCode, s.createBy, s.createTime, s.editBy, s.editTime
+        from tbl_student s
+                 left join tbl_class c on c.id=s.class_id
+                 left join tbl_dic_dep d on d.code=s.dep_id
+                 left join tbl_dic_pro p on p.code=s.pro_id
+        where (s.tourCode='' or s.tourCode=null) and s.id in
+        <foreach collection="array" item="studentId" separator="," open="(" close=")">
+            #{studentId}
+        </foreach>
+        order by s.id_number desc
+    </select>
+
+    <select id="getNotHealthStudents" resultType="com.my.entity.Student">
+        select
+            s.id, s.id_number, s.name, s.password, s.sex, s.phone, s.email, s.address, s.avatar,
+            s.lockState, c.name as class_id, d.short_name as dep_id, p.short_name as pro_id, s.isClock,
+            s.healthCode, s.tourCode, s.createBy, s.createTime, s.editBy, s.editTime
+        from tbl_student s
+                 left join tbl_class c on c.id=s.class_id
+                 left join tbl_dic_dep d on d.code=s.dep_id
+                 left join tbl_dic_pro p on p.code=s.pro_id
+        where s.healthCode=''
+        order by s.id_number desc
+    </select>
+
+    <select id="getNotHealthStudentsByStudentIds" resultType="com.my.entity.Student">
+        select
+            s.id, s.id_number, s.name, s.password, s.sex, s.phone, s.email, s.address, s.avatar,
+            s.lockState, c.name as class_id, d.short_name as dep_id, p.short_name as pro_id, s.isClock,
+            s.healthCode, s.tourCode, s.createBy, s.createTime, s.editBy, s.editTime
+        from tbl_student s
+                 left join tbl_class c on c.id=s.class_id
+                 left join tbl_dic_dep d on d.code=s.dep_id
+                 left join tbl_dic_pro p on p.code=s.pro_id
+        where (s.healthCode='' or s.healthCode=null) and s.id in
+        <foreach collection="array" item="studentId" separator="," open="(" close=")">
+            #{studentId}
+        </foreach>
+        order by s.id_number desc
+    </select>
+
+    <insert id="saveStudents">
+        insert into tbl_student
+        (
+            id,
+            id_number,
+            name,
+            password,
+            sex,
+            phone,
+            email,
+            address,
+            avatar,
+            lockState,
+            isClock,
+            healthCode,
+            tourCode,
+            class_id,
+            dep_id,
+            pro_id,
+            createBy,
+            createTime
+        )
+        values
+        <foreach collection="list" item="student" separator=",">
+            (
+                #{student.id},
+                #{student.id_number},
+                #{student.name},
+                #{student.password},
+                #{student.sex},
+                #{student.phone},
+                #{student.email},
+                #{student.address},
+                #{student.avatar},
+                #{student.lockState},
+                #{student.isClock},
+                #{student.healthCode},
+                #{student.tourCode},
+                #{student.class_id},
+                #{student.dep_id},
+                #{student.pro_id},
+                #{student.createBy},
+                #{student.createTime}
+            )
+        </foreach>
+    </insert>
+
+    <update id="resetPassword">
+        update tbl_student set
+            password=#{password},
+            editBy=#{editBy},
+            editTime=#{editTime}
+    </update>
+
+    <update id="resetHealthAndTourCode">
+        update tbl_student
+        set
+        tourCode=#{tourCode},
+        healthCode=#{healthCode},
+        editBy=#{editBy},
+        editTime=#{editTime}
+    </update>
+
+    <update id="resetPunch">
+        update tbl_student
+        set
+        isClock=#{isClock},
+        editBy=#{editBy},
+        editTime=#{editTime}
+    </update>
+
+    <update id="updateHealthCode">
+        update tbl_student
+        set
+        healthCode=#{healthCode}
+        where id=#{id}
+    </update>
+
+    <update id="updateTourCode">
+        update tbl_student
+        set
+        tourCode=#{tourCode}
+        where id=#{id}
+    </update>
+
+
+    <select id="queryAllStudentsByClassId" resultType="com.my.entity.Student">
+        select
+            s.id, s.id_number, s.name, s.password, s.sex, s.phone, s.email, s.address, s.avatar,
+            s.lockState, c.name as class_id, d.short_name as dep_id, p.short_name as pro_id, s.isClock,
+            s.healthCode, s.tourCode, s.createBy, s.createTime, s.editBy, s.editTime
+        from tbl_student s
+                 left join tbl_class c on c.id=s.class_id
+                 left join tbl_dic_dep d on d.code=s.dep_id
+                 left join tbl_dic_pro p on p.code=s.pro_id
+        where class_id=#{ci}
+        order by s.id_number desc
+    </select>
+
+    <select id="getStudentByIdsAndClassId" resultType="com.my.entity.Student">
+        select
+        s.id, s.id_number, s.name, s.password, s.sex, s.phone, s.email, s.address, s.avatar,
+        s.lockState, c.name as class_id, d.short_name as dep_id, p.short_name as pro_id, s.isClock,
+        s.healthCode, s.tourCode, s.createBy, s.createTime, s.editBy, s.editTime
+        from tbl_student s
+        left join tbl_class c on c.id=s.class_id
+        left join tbl_dic_dep d on d.code=s.dep_id
+        left join tbl_dic_pro p on p.code=s.pro_id
+        where s.id in
+        <foreach collection="array" item="ids" separator="," open="(" close=")">
+            #{ids}
+        </foreach>
+        order by s.id_number desc
+    </select>
+
+    <select id="queryStudentsByClassId" resultType="java.lang.String">
+        select id from tbl_student
+        where class_id=#{ci}
+    </select>
+
+    <select id="getPunchByConditionAndClassId" resultType="com.my.entity.Student">
+        select
+            s.id, s.id_number, s.name, s.sex, s.phone, c.name as class_id, s.isClock
+        from tbl_student s
+        left join tbl_class c on c.id=s.class_id
+        where s.id in
+        <foreach collection="studentIds" item="studentId" separator="," open="(" close=")">
+            #{studentId}
+        </foreach>
+        <if test="student.name != null and student.name != ''">
+            and s.name like '%' #{student.name} '%'
+        </if>
+        <if test="student.id_number != null and student.id_number != ''">
+            and s.id_number like '%' #{student.id_number} '%'
+        </if>
+        <if test="student.sex != null and student.sex != ''">
+            and s.sex like '%' #{student.sex} '%'
+        </if>
+        <if test="student.phone != null and student.phone != ''">
+            and s.phone like '%' #{student.phone} '%'
+        </if>
+        <if test="student.class_id != null and student.class_id != ''">
+            and c.name like '%' #{student.class_id} '%'
+        </if>
+        order by s.isClock asc
+    </select>
+
+    <select id="login" resultType="com.my.entity.Student">
+        select
+            s.id, s.id_number, s.name, s.password, s.sex, s.phone, s.email, s.address, s.avatar,
+            s.lockState, c.name as class_id, d.short_name as dep_id, p.short_name as pro_id, s.isClock,
+            s.healthCode, s.tourCode
+        from tbl_student s
+         left join tbl_class c on c.id=s.class_id
+         left join tbl_dic_dep d on d.code=s.dep_id
+         left join tbl_dic_pro p on p.code=s.pro_id
+        where id_number = #{id_number} and password = #{password}
+    </select>
+
+    <update id="setStudentPwd">
+        update tbl_student
+        set
+        password = #{password}
+        where id = #{id}
+    </update>
+
+    <update id="setAvatar">
+        update tbl_student
+        set
+        avatar = #{avatar}
+        where id = #{id}
+    </update>
+
+    <update id="punch">
+        update tbl_student
+        set
+        isClock = '1'
+        where id = #{id}
+    </update>
+
+</mapper>

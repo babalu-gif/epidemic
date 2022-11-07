@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.my.mapper.ClassMapper">
+    <select id="queryAllClassName" resultType="string">
+        select name from tbl_class
+    </select>
+
+    <select id="selectClassByName" resultType="com.my.entity.Class">
+        select id, name, pro_code, dep_code, number from tbl_class where name=#{name} order by name asc
+    </select>
+
+    <insert id="insertClass">
+        insert into
+        tbl_class
+            (id, name, pro_code, dep_code, number)
+        values
+            (#{id}, #{name}, #{pro_code}, #{dep_code})
+    </insert>
+
+    <select id="queryAllClass" resultType="com.my.entity.Class">
+        select id, name, pro_code, dep_code, number from tbl_class
+    </select>
+
+    <select id="queryClassByDepCode" resultType="com.my.entity.Class">
+        select id, name, pro_code, dep_code, number from tbl_class where dep_code=#{dep_code} order by name asc
+    </select>
+
+    <select id="queryClassNumberByName" resultType="int">
+        select number from tbl_class where name=#{name}
+    </select>
+
+    <update id="updateClassNumber" >
+        update tbl_class
+        set
+            number=#{number}
+        where id=#{id}
+    </update>
+
+    <select id="queryClassById" resultType="com.my.entity.Class">
+        select id, name, pro_code, dep_code, number from tbl_class where id=#{id}
+    </select>
+</mapper>
